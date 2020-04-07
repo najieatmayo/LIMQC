@@ -9,7 +9,7 @@ To run this application localy, simple paste the following code on `R` console:
 
 ```{r} 
 if (!require('shiny')) install.packages("shiny")
-shiny::runGitHub("najieatmayo/LIMQC.git", "najieatmayo")
+shiny::runGitHub("LIMQC", "najieatmayo")
 ```
 
 ## Run method 2
