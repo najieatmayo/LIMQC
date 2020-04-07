@@ -3,13 +3,13 @@
 
 This interactive application allows you to explore how a longitudinal data generated across a period time. For data exploration, QC, trending, correlation, distribution comparison can be examed visually in this app.
 
-## Run this application on R Studio
+## Run method 1
 
 To run this application localy, simple paste the following code on `R` console: 
 
 ```{r} 
- setwd("/data5/bsi/bioinf_ext1/s200798.sequenome_analysis/NIPT/Afterlive/ShinyApp/LongQC/")
- runApp()
+if (!require('shiny')) install.packages("shiny")
+shiny::runGitHub("najieatmayo/LIMQC.git", "najieatmayo")
 ```
 
 ## Want to help?
