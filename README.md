@@ -14,10 +14,10 @@ shiny::runGitHub("najieatmayo/LIMQC.git", "najieatmayo")
 
 ## Run method 2
 
-Or you can clone or download this repository, and use run following code on `R` console:
+Or you can clone or download this repository, set working directory to LIMQC and use following code on `R` console:
 
 ```{r} 
-shiny::runApp("LIMQC")
+shiny::runApp()
 ```
 ## Want to help?
 
