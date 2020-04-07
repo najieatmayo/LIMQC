@@ -12,6 +12,13 @@ if (!require('shiny')) install.packages("shiny")
 shiny::runGitHub("najieatmayo/LIMQC.git", "najieatmayo")
 ```
 
+## Run method 2
+
+Or you can clone or download this repository, and use run following code on `R` console:
+
+```{r} 
+shiny::runApp("LIMQC")
+```
 ## Want to help?
 
 Please, report bugs to na.jie@mayo.edu
