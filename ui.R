@@ -11,17 +11,17 @@ sidebar <- dashboardSidebar(
   sidebarMenu(id="menu1",
               menuItem("Start", tabName = "start", icon = icon("info-circle")),
               
-              menuItem("Raw Data", tabName = "data", icon = icon("th")),
+              menuItem("Data Examinations", tabName = "data", icon = icon("th")),
               
-              menuItem("Data Descr", tabName = "datades", icon = icon("list-alt")),
+              menuItem("Descriptive statistics", tabName = "datades", icon = icon("list-alt")),
               
-              menuItem("QC stats", tabName = "QCdata", icon = icon("stats",lib='glyphicon')),
+              menuItem("QC Dashboard", tabName = "QCdata", icon = icon("stats",lib='glyphicon')),
               
-              menuItem("Graphs", tabName = "graphs", icon = icon("navicon"),
+              menuItem("Interactive Graphs", tabName = "graphs", icon = icon("navicon"),
                        menuSubItem("Trending", tabName = "trend", icon = icon("line-chart")), 
                        menuSubItem("Correlation", tabName = "corr", icon = icon("random")),
                        menuSubItem("Comparison", tabName = "group", icon = icon("tasks")),
-                       menuSubItem("Multi panel", tabName = "mult", icon = icon("fas fa-cogs"))
+                       menuSubItem("Multi-panel examination", tabName = "mult", icon = icon("fas fa-cogs"))
                        ),
               ##menuItem("Report", tabName = "report", icon = icon("list-alt")),
               br(),
