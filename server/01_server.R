@@ -80,10 +80,11 @@ metricCols2 <-  reactive({ ## catgorical
 
 observe({
   
-#  if(!rv$default)##if(!is.null(input$file1))
-#  { ## use loaded data
-
-    updateSelectInput(session, inputId="ind_sample_groups", choices = STypes2(), selected= STypes2()[1])
+  ##if(!rv$default)##if(!is.null(input$file1))
+  ##{ ## use loaded data
+    
+    
+    updateSelectInput(session, inputId="ind_sample_groups", choices = STypes2(), selected= "patients") ##STypes2()[1])
     updateSelectInput(session, inputId="ind_sample_groupsQC", choices = STypes2(), selected= STypes2()[1])
     updateSelectInput(session, inputId="CorrST", choices = STypes2(), selected= STypes2()[1])
     updateSelectInput(session, inputId="sampleTG", choices = STypes2(), selected= STypes2()[1])
@@ -103,19 +104,19 @@ observe({
     updateSelectInput(session, inputId="pz", choices = metricCols1(), selected= metricCols1()[3])
 
   # } else {
-  #   
+  # 
   #   updateSelectInput(session, inputId="ind_sample_groups", choices = STypes2(), selected= STypes2()[1])
   #   updateSelectInput(session, inputId="ind_sample_groupsQC", choices = STypes2(), selected= STypes2()[1])
-  #   
+  # 
   #   updateSelectInput(session, inputId="CorrST", choices = STypes2(), selected= STypes2()[1])
   #   updateSelectInput(session, inputId="sampleTG", choices = STypes2(), selected= STypes2()[1])
   #   updateSelectInput(session, inputId="sampleTG2", choices = STypes2(), selected= STypes2()[1])
-  #   
+  # 
   #   updateSelectInput(session, inputId="col2show", choices = col2display2(), selected= col2display2())
   #   ##updateSelectInput(session, inputId="ind_sampletype", choices = STypes2(), selected= STypes2()[1])
   #   updateSelectInput(session, inputId="ind_metric", choices = metricCols1(), selected= metricCols1()[1])
   #   updateSelectInput(session, inputId="metric_by", choices = metricCols1(), selected= metricCols1()[1])
-  #   
+  # 
   #   updateSelectInput(session, inputId="by_group", choices = metricCols2(), selected= metricCols2()[1])
   #   updateSelectInput(session, inputId="metric_x", choices = metricCols1(), selected= metricCols1()[1])
   #   updateSelectInput(session, inputId="metric_y", choices = metricCols1(), selected= metricCols1()[2])
@@ -138,7 +139,7 @@ mydataR<- reactive({
   #} else {
    stype <- input$ind_sample_groups
   #}
-  
+  browser()
   mydata() %>% filter(sample_type %in% stype) %>% arrange(pdate)
 
 })
