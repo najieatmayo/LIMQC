@@ -1,7 +1,7 @@
-## About `Longitudinal Data QC` Shiny App
+## About `LIMQC` Shiny App
 
 
-This interactive application allows you to explore how a longitudinal data generated across a period time. For data exploration, QC, trending, correlation, distribution comparison can be examed visually in this app.
+LIMQC provides interactive graphic user interface for selecting and examining quality data element of interests, with exportable table and figure results.
 
 ## Run method 1
 
