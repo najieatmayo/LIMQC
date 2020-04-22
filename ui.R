@@ -1,7 +1,7 @@
 #
 ### Title:
 
-header <- dashboardHeader(title = "LIM-QC")
+header <- dashboardHeader(title = "LIMQC")
 
 ### SideBar:
 sidebar <- dashboardSidebar(
@@ -36,7 +36,8 @@ sidebar <- dashboardSidebar(
               br(),
               br(),
               hr(),
-              menuItem("About", tabName = "about", icon = icon("info-circle"))
+              menuItem("About", tabName = "about", icon = icon("question-circle")),
+              menuItem("Disclaimer", tabName = "disclaimer", icon = icon("bell"))
              )
   )
 
@@ -357,12 +358,19 @@ body <- dashboardBody(
     #         )
     # ),
     # TAB 5? = About
-     tabItem(tabName = "about",
+    tabItem(tabName = "about",
              fluidPage(
                box(width = 10,status = "success",
                    shiny::includeMarkdown("README.md"))
              )
-     )
+    ), ## end of About tab
+    # TAB 6 = Disclaimer
+    tabItem(tabName = "disclaimer",
+            fluidPage(
+              box(width = 10,status = "success",
+                  shiny::includeMarkdown("Disclaimer.md"))
+            )
+    ) ## end of tab 6
    )
 )
 
