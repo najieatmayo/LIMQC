@@ -1,13 +1,20 @@
 #
 ### Title:
-
-header <- dashboardHeader(title = "LIMQC")
+header <- dashboardHeader(title = 'LIMQC' )
 
 ### SideBar:
 sidebar <- dashboardSidebar(
   dateRangeInput('dateRange',
                  label = 'Date range input: yyyy-mm-dd', format = "yyyy-mm-dd",
                  start = min(pt$pdate, na.rm  = T), end = Sys.Date()), ## min(pt$pdate, na.rm  = T) "2016-01-01"
+  radioButtons("rb", "Input Data:",
+               choices = c("Demo Data", "Upload Your Own Data"),
+               selected = "Demo Data"),
+  conditionalPanel(condition = 'input.rb == "Upload Your Own Data"',
+                   fileInput("inFile", "", accept = c(".csv"))
+  ),
+  
+  hr(),
   sidebarMenu(id="menu1",
               menuItem("Start", tabName = "start", icon = icon("info-circle")),
               
@@ -31,11 +38,8 @@ sidebar <- dashboardSidebar(
               br(),
               br(),
               br(),
-              br(),
-              br(),
-              br(),
-              br(),
               hr(),
+              
               menuItem("About", tabName = "about", icon = icon("question-circle")),
               menuItem("Disclaimer", tabName = "disclaimer", icon = icon("bell"))
              )
@@ -66,38 +70,39 @@ body <- dashboardBody(
     tabItem(tabName = "data",
             ##tags$hr(),
             fluidRow(useShinyjs(),
-              box( width = 4, height = 120,
-                   
-                   fluidRow(column(8, 
-                        fileInput("inFile", label = "Upload Your Own Data:")),
-                        column(2, actionButton("reset1", "Demo Data")))),
-              box(
-                title = "Sample Type",
-                width = 4, height = 120,
-
-                shinyWidgets::pickerInput(
-                  inputId = "ind_sample_groups",
-                  label = "",
-                  choices = NULL,
-                  options = list('actions-box' = TRUE),
-                  multiple = TRUE,
-                  selected = NULL
+                     valueBoxOutput("vbox1", width = 3),
+                     valueBoxOutput("vbox2", width = 3),
+              # box( width = 4, height = 120,
+              #      
+              #      fluidRow(column(8, 
+              #           fileInput("inFile", label = "Upload Your Own Data:")),
+              #           column(2, actionButton("reset1", "Demo Data")))),
+                box(
+                  title = "Sample Type",
+                  width = 3, height = 110,
+  
+                  shinyWidgets::pickerInput(
+                    inputId = "ind_sample_groups",
+                    label = "",
+                    choices = NULL,
+                    options = list('actions-box' = TRUE),
+                    multiple = TRUE,
+                    selected = NULL
+                  )
+                ),
+                box(
+                  title = "Cols to display",
+                  width = 3, height = 110,
+                  shinyWidgets::pickerInput(
+                    inputId = "col2show",
+                    label = "",
+                    choices = NULL,
+                    options = list('actions-box' = TRUE),
+                    multiple = TRUE,
+                    selected = NULL
+                  )
                 )
               ),
-              box(
-                title = "Cols to display",
-                width = 4, height = 120,
-                shinyWidgets::pickerInput(
-                  inputId = "col2show",
-                  label = "",
-                  choices = NULL,
-                  options = list('actions-box' = TRUE),
-                  multiple = TRUE,
-                  selected = NULL
-                )
-              ),
-              valueBoxOutput("vbox1", width = 6),
-              valueBoxOutput("vbox2", width = 6)),
             fluidRow(
               box(title = "sample info",
                   width = 12,
@@ -281,7 +286,7 @@ body <- dashboardBody(
                 shinyWidgets::pickerInput(
                   inputId = "lab_metric",
                   label = "label point with",
-                  choices = NULL,
+                  choices = anames,
                   options = list('actions-box' = TRUE),
                   multiple = TRUE,
                   selected = NULL),
