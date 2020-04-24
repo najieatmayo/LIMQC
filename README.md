@@ -9,7 +9,7 @@ rtools.mayo.edu/LIMQC/ <<- place holder
 
 ## User guide
 
-Please check the User guide [here](start.html)
+Please check the User guide [here](start.md)
 
 ## Run method 1
 
