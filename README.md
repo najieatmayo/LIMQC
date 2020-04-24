@@ -3,6 +3,14 @@
 
 LIMQC provides interactive graphic user interface for selecting and examining quality data element of interests, with exportable table and figure results.
 
+## Host place
+
+rtools.mayo.edu/LIMQC/ <<- place holder
+
+## User guide
+
+Please check the User guide [here](start.html)
+
 ## Run method 1
 
 To run this application localy, simple paste the following code on `R` console: 
