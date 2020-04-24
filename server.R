@@ -23,15 +23,19 @@ function(input, output, session){
   rv <- reactiveValues(default=TRUE,
                        data = pt)
   
-  observeEvent(input$inFile, {
+  observeEvent({if (isTruthy(input$rb == "Upload Your Own Data")) {return(TRUE)}
+    else {
+      return()}}, {
+
     rv$default <- FALSE
   }, priority = 1)
   
   
   observe({
-    req(input$inFile)
+    
     req(!rv$default)
-    print("upload data")
+    req(input$inFile)
+    print(input$rb)
     if(grep("\\.csv", input$inFile$datapath)){
       test <- read.csv(input$inFile$datapath, header = T, stringsAsFactors=FALSE)
     } else {
@@ -43,13 +47,15 @@ function(input, output, session){
   })
   
   
-  observeEvent(input$reset1, {
-    print("use example data")
+  observeEvent({if (input$rb == "Demo Data") TRUE
+    else return()}, {
+    print(input$rb)
+    
     rv$data <- pt ##%>% filter(pdate <= input$dateRange[2] & pdate >= input$dateRange[1]) %>% arrange(pdate)
     rv$default <- TRUE
     
     shinyjs::reset('inFile')
-  }, priority = 2)
+  }, priority = -1)
   
   mydata <- reactive({
     ppt <- rv$data
@@ -664,7 +670,6 @@ function(input, output, session){
   output$corrstats <- renderPrint({
     if(input$addtrend){
       dt2plot <- corrs.to.plot()
-      bowser()
       
       if(!input$logx & !input$logy){
         myfit <- lm(Metric2~Metric1, data=dt2plot)
@@ -725,7 +730,8 @@ function(input, output, session){
     
     d <- event_data("plotly_selected")
     p <- plot_ly(dat2plot, x = ~x, y = ~y) %>%
-      add_markers(key = ~uid, color = ~group)
+      add_markers(key = ~uid, color = ~group) %>%
+      layout(xaxis = list(title = input$px), yaxis = list(title = input$py))
     if (!is.null(d)) {
       m <- dat2plot[dat2plot$uid %in% d[["key"]], ]
       p <- add_markers(p, data = m, color = I("red"))
@@ -748,7 +754,8 @@ function(input, output, session){
     
     d <- event_data("plotly_selected")
     p <- plot_ly(dat2plot, x = ~x, y = ~z) %>%
-      add_markers(key = ~uid, color = ~group)
+      add_markers(key = ~uid, color = ~group) %>%
+      layout(xaxis = list(title = input$px), yaxis = list(title = input$pz))
     if (!is.null(d)) {
       m <- dat2plot[dat2plot$uid %in% d[["key"]], ]
       p <- add_markers(p, data = m, color = I("red"))
