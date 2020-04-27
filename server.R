@@ -90,21 +90,21 @@ function(input, output, session){
     
     updatePickerInput(session= session, inputId="ind_sample_groups", choices = STypes2(), selected= STypes2())
     updatePickerInput(session= session, inputId="ind_sample_groupsQC", choices = STypes2(), selected= STypes2()[1])
-    updatePickerInput(session = session, inputId="CorrST", choices = STypes2(), selected= STypes2()[1])
-    updatePickerInput(session = session, inputId="sampleTG", choices = STypes2(), selected= STypes2()[1])
-    updatePickerInput(session = session, inputId="sampleTG2", choices = STypes2(), selected= STypes2()[1])
+    updateSelectInput(session = session, inputId="CorrST", choices = STypes2(), selected= STypes2()[1])
+    updateSelectInput(session = session, inputId="sampleTG", choices = STypes2(), selected= STypes2()[1])
+    updateSelectInput(session = session, inputId="sampleTG2", choices = STypes2(), selected= STypes2()[1])
     
     updatePickerInput(session = session, inputId="col2show", choices = col2display2(), selected= col2display2())
-    updatePickerInput(session = session, inputId="ind_metric", choices = metricCols1(), selected= metricCols1()[1])
-    updatePickerInput(session = session, inputId="metric_by", choices = metricCols1(), selected= metricCols1()[1])
+    updateSelectInput(session = session, inputId="ind_metric", choices = metricCols1(), selected= metricCols1()[1])
+    updateSelectInput(session = session, inputId="metric_by", choices = metricCols1(), selected= metricCols1()[1])
     
-    updatePickerInput(session = session, inputId="by_group2", choices = metricCols2(), selected= metricCols2()[1])
-    updatePickerInput(session = session, inputId="by_group", choices = metricCols2(), selected= metricCols2()[1])
-    updatePickerInput(session = session, inputId="metric_x", choices = metricCols1(), selected= metricCols1()[1])
-    updatePickerInput(session = session, inputId="metric_y", choices = metricCols1(), selected= metricCols1()[2])
-    updatePickerInput(session = session, inputId="px", choices = metricCols1(), selected= metricCols1()[1])
-    updatePickerInput(session = session, inputId="py", choices = metricCols1(), selected= metricCols1()[2])
-    updatePickerInput(session = session, inputId="pz", choices = metricCols1(), selected= metricCols1()[3])
+    updateSelectInput(session = session, inputId="by_group2", choices = metricCols2(), selected= metricCols2()[1])
+    updateSelectInput(session = session, inputId="by_group", choices = metricCols2(), selected= metricCols2()[1])
+    updateSelectInput(session = session, inputId="metric_x", choices = metricCols1(), selected= metricCols1()[1])
+    updateSelectInput(session = session, inputId="metric_y", choices = metricCols1(), selected= metricCols1()[2])
+    updateSelectInput(session = session, inputId="px", choices = metricCols1(), selected= metricCols1()[1])
+    updateSelectInput(session = session, inputId="py", choices = metricCols1(), selected= metricCols1()[2])
+    updateSelectInput(session = session, inputId="pz", choices = metricCols1(), selected= metricCols1()[3])
     
     
     updatePickerInput(session = session, inputId="ConditioningVariables", choices = metricCols1(), selected= NULL)
