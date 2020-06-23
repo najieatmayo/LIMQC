@@ -22,5 +22,6 @@ library(shinyjs)
 options(shiny.maxRequestSize=30*1024^2) 
 load("data/test.RData")
 pt <- test
+rm(test)
 anames <- c("pdate", "sample.ID", "run.ID")
 

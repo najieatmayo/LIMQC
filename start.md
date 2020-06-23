@@ -41,7 +41,7 @@ run.ID: name of each run, eg. “HMLJYBCX2”; <br />
 
 sample.ID: name of sample, eg. “19-S3962-A-03-00”; <br /> 
 
-sample_type: Sample type, eg. “patient”, “NPPCTRL”, “T13CTRL”, “T18CTRL”, or “T21CTRL”; <br /> 
+sample.type: Sample type, eg. “patient”, “NPPCTRL”, “T13CTRL”, “T18CTRL”, or “T21CTRL”; <br /> 
 
 sample.QC: QC status of each sample, eg. “Pass”, “FFlt4 warning”, or “GC Bias warning”; <br /> 
 
@@ -96,7 +96,7 @@ This app requires the following format for your uploaded data. <br />
   + __pdate__ : processing date in date format; <br /> 
   + __run.ID__: name of each run; <br /> 
   + __sample.ID__: name of sample; <br /> 
-  + __sample_type__: Sample type (could be clinical patient, lab control, or other controls) <br /> 
+  + __sample.type__: Sample type (could be clinical patient, lab control, or other controls) <br /> 
   + __sample.QC__: QC status of each sample "Pass" or "Fail" or other warnings; <br /> 
   
   
@@ -123,15 +123,7 @@ Two balue boxes shows the summary number of runs and samples in the selected dat
 
 #### **Sample Type**
 
-Choose Sample Type for further summary. Sample Type is summarized from **sample_type** variable in the data. In Demo Data, it has the values of the following: NPPCTRL patient T13CTRL T18CTRL T21CTRL.  <br />
-
-<details><summary>CLICK ME TO SHOW/HIDE DETAILS</summary>
-<p>
-
-<img src="./www/valueboxes.PNG" width="300">
-
-</p>
-</details>
+Choose Sample Type for further summary. Sample Type is summarized from **sample.type** variable in the data. In Demo Data, it has the values of the following: NPPCTRL patient T13CTRL T18CTRL T21CTRL.  <br />
 
 #### **Cols to display**
 
@@ -204,26 +196,34 @@ Tab shows stats of samples of selected Sample Type in selected date range with Q
 
 ### **Interactive Graphs**
 
-**`Trending`** Tab shows time series plots per sample, boxplot per run, median per run, moving window average (default 50) for selected samples.  Distribution of the selected metric is shown as histogram and basic summary statistics on the side.
+**`Trending`** Tab shows time series plots per sample, boxplot per date, median per date, boxplot per run, median per run, moving window average (default 50) for selected samples.  Distribution of the selected metric is shown as histogram and basic summary statistics on the side.
 
 <details><summary>CLICK ME TO SHOW/HIDE DETAILS</summary>
 <p>
 
 Example1. Per Sample trending scatter plot of T13.Zscore, each dot is a sample from patient sample with filtering on T13.Zscore between -0.2 and 10.  <br />
 
-<img src="./www/trendingpersample.PNG" style="border: 1px solid black" /> <br />
+<img src="./www/trendingpersample.PNG" style="border: 1px solid black"  width="800" /> <br />
 
-Example2. Per Run trending box plot of Final.Conc..ng.ul, each boxplot is a run summarized from patient sample with filtering on QC pass, and total.raw.cvg.Million between 5.4 and 24.  <br />
+Example2. Per Date trending box plot of T13.Zscore, each boxplot is summarized from patient sample with filtering on T13.Zscore between -0.2 and 10 for each process date. Note that if multiple runs are processed on one date, the summary is on all the samples processed on that date.  <br />
 
-<img src="./www/trendingperrun.PNG" style="border: 1px solid black" /> <br />
+<img src="./www/trendingperdate.PNG" style="border: 1px solid black"  width="800" /> <br />
 
-Example3. Median Per Run trending plot of T13.Zscore, each dot is a median of the value in that run summarized from patient sample with filtering on QC pass, and Final.Conc..ng.ul between 7.4 and 19.7.  <br />
+Example3. Median Per Date trending plot of T13.Zscore, each dot is a median of the value of patient samples with filtering on T13.Zscore between -0.2 and 10 for each process date.  <br />
 
-<img src="./www/trendingMedian.PNG" style="border: 1px solid black" /> <br />
+<img src="./www/trendingdateMedian.PNG" style="border: 1px solid black"  width="800" /> <br />
 
-Example4. Moving window trending plot of Final.Conc..ng.ul, each boxplot is a run summarized from patient sample with filtering on QC pass.  <br />
+Example4. Per Run trending box plot of T13.Zscore, each boxplot is a run summarized from patient samples with filtering on T13 calling negative, and total.raw.cvg.Million between 5 and 41.  Note that: the order is still in time order. Only summary is on run level not date level. <br />
 
-<img src="./www/trendingMW.PNG" style="border: 1px solid black" /> <br />
+<img src="./www/trendingperrun.PNG" style="border: 1px solid black"  width="800" /> <br />
+
+Example5. Median Per Run trending plot of T13.Zscore, each dot is a median of a run summarized from patient samples with filtering on T13 calling negative, and total.raw.cvg.Million between 5 and 41. Note that: the order is still in time order. Only summary is on run level not date level.  <br />
+
+<img src="./www/trendingMedian.PNG" style="border: 1px solid black"  width="800" /> <br />
+
+Example6. Moving window trending plot of Final.Conc..ng.ul, each boxplot is a run summarized from patient sample with filtering on QC pass.  <br />
+
+<img src="./www/trendingMW.PNG" style="border: 1px solid black"  width="800" /> <br />
 </p>
 </details>
 
@@ -235,7 +235,7 @@ Example4. Moving window trending plot of Final.Conc..ng.ul, each boxplot is a ru
 Example. Scatter plot of YX ratio vs case.fraction from patient sample with filtering on YXratio between 0.0049 and 0.28. Labeled points with pdate, sample.ID and runID so that these information will show up when mouse over each point. Added trend line from linear regression. A simple summary of hypothesis testing correlation is shown in text below the plot. The example shows YXratio is significantly associated with case.fraction for male fetus which is expected. If this relationship is not shown, there must be something not correct. A good tool for both fact checking and new relationship exploration.  <br />
 
 
-<img src="./www/AppCorrelation.PNG" style="border: 1px solid black" />
+<img src="./www/AppCorrelation.PNG" style="border: 1px solid black"  width="800" />
 
 </p>
 </details>
@@ -249,7 +249,7 @@ Example. Scatter plot of YX ratio vs case.fraction from patient sample with filt
 Example. Overlapping histograms are to show the batch effect of the distibution of the metric Final.Conc..ng.ul by preparation version. The Demo Data is simulated to have the difference. <br />
 
 
-<img src="./www/AppComparison.PNG" style="border: 1px solid black" />
+<img src="./www/AppComparison.PNG" style="border: 1px solid black"  width="800" />
 
 </p>
 </details>
@@ -265,7 +265,7 @@ Example. Overlapping histograms are to show the batch effect of the distibution 
 
 Example. The linked two panels are showing 1) total.raw.cvg.Million vs YXraio and 2) case.fraction vs YXratio. One purpose is to check the relationships of three variables at one time. Another purpose is to identify any outlier. Selecting points in one plot, the linked same sample(s) are highlighted in red on both plots. The selected sample info table shows the details of these selectied samples. Samples can be colored by different groups, in this example, by version.  <br />
 
-<img src="./www/Multipanel.PNG" style="border: 1px solid black" />
+<img src="./www/Multipanel.PNG" style="border: 1px solid black"  width="800"/>
 
 </p>
 </details>

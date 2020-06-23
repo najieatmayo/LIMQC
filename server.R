@@ -41,7 +41,8 @@ function(input, output, session){
     } else {
       test <- read.table(input$inFile$datapath, header = T, sep = "\t", stringsAsFactors=FALSE)
     }
-    test$pdate <- as.Date(test$pdate)
+    
+    test$pdate <- as.Date(test$pdate , format = "%m/%d/%Y")
     req(input$dateRange)
     rv$data <- test %>% filter(pdate <= input$dateRange[2] & pdate >= input$dateRange[1]) %>% arrange(pdate)
   })
@@ -68,7 +69,7 @@ function(input, output, session){
   
   
   STypes2 <- reactive({
-    ttypes <- as.character(unique(mydata()$sample_type))
+    ttypes <- as.character(unique(mydata()$sample.type))
     names(ttypes) <- ttypes
     
     return(ttypes)
@@ -117,14 +118,14 @@ function(input, output, session){
   mydataR<- reactive({
     
     stype <- input$ind_sample_groups
-    mydata() %>% filter(sample_type %in% stype) %>% arrange(pdate)
+    mydata() %>% filter(sample.type %in% stype) %>% arrange(pdate)
     
   })
   
   mydataRQC <- reactive({
     req(input$ind_sample_groupsQC)
     stype <- input$ind_sample_groupsQC
-    mydata() %>% filter(sample_type %in% stype) %>% arrange(pdate)
+    mydata() %>% filter(sample.type %in% stype) %>% arrange(pdate)
     
   })
   
@@ -463,8 +464,8 @@ function(input, output, session){
         dat2plot <- dat2plot %>% filter(get(input$ConditioningVariables[i]) > (input[[input$ConditioningVariables[i]]])[1] & get(input$ConditioningVariables[i]) < (input[[input$ConditioningVariables[i]]])[2])
       }
     }
-    dat2plot <- dat2plot %>% dplyr::select(pdate, run.ID, sample.ID, input$ind_metric, sample_type)
-    colnames(dat2plot) <- c("pdate", "run.ID", "sample.ID", "metric", "sample_type")
+    dat2plot <- dat2plot %>% dplyr::select(pdate, run.ID, sample.ID, input$ind_metric, sample.type)
+    colnames(dat2plot) <- c("pdate", "run.ID", "sample.ID", "metric", "sample.type")
     dat2plot
   })
   
@@ -475,8 +476,8 @@ function(input, output, session){
     req(input$CorrST)
     stype <- input$CorrST
     
-    dat2plot <- mydata()  %>% filter(sample_type %in% stype) %>% dplyr::select(input$metric_x, input$metric_y, sample_type, input$lab_metric)
-    colnames(dat2plot) <- c("Metric1", "Metric2", "sample_type", input$lab_metric)
+    dat2plot <- mydata()  %>% filter(sample.type %in% stype) %>% dplyr::select(input$metric_x, input$metric_y, sample.type, input$lab_metric)
+    colnames(dat2plot) <- c("Metric1", "Metric2", "sample.type", input$lab_metric)
     dat2plot
   })
   
@@ -487,8 +488,8 @@ function(input, output, session){
     req(input$sampleTG)
     stype <- input$sampleTG
     ##if("All" %in% stype) stype = types
-    dat2plot <- mydata() %>% filter(sample_type %in% stype) %>% dplyr::select(input$metric_by, input$by_group, sample_type) 
-    colnames(dat2plot) <- c("Metric", "Group", "sample_type")
+    dat2plot <- mydata() %>% filter(sample.type %in% stype) %>% dplyr::select(input$metric_by, input$by_group, sample.type) 
+    colnames(dat2plot) <- c("Metric", "Group", "sample.type")
     dat2plot
   })
   
@@ -523,11 +524,10 @@ function(input, output, session){
     xt <- list(title = "Date")
     yt <- list(title = input$ind_metric)
     
-    plot_ly(selectMetrics(), x = ~pdate, y = ~metric, color = ~sample_type, text = ~paste(run.ID, sample.ID), colors = pal, type = 'scatter', mode = 'markers') %>%
+    plot_ly(selectMetrics(), x = ~pdate, y = ~metric, color = ~sample.type, text = ~paste(run.ID, sample.ID), colors = pal, type = 'scatter', mode = 'markers') %>%
       layout(xaxis = xt, yaxis = yt) 
   })
-  
-  output$runtrending <- renderPlotly({
+  output$datetrending <- renderPlotly({
     xt <- list(title = "Date")
     yt <- list(title = input$ind_metric)
     
@@ -535,12 +535,30 @@ function(input, output, session){
       layout(xaxis = xt, yaxis = yt) %>% layout(showlegend = FALSE)
   })
   
-  output$Mruntrending <- renderPlotly({
+  output$Mdatetrending <- renderPlotly({
     data2plot <- selectMetrics() %>% group_by(pdate) %>% summarise(mymedian=mean(metric, na.rm = T))
     xt <- list(title = "Date")
     yt <- list(title = input$ind_metric)
     
     plot_ly(data2plot, x = ~pdate, y = ~mymedian, type = 'scatter', mode = 'markers') %>%
+      layout(xaxis = xt, yaxis = yt) 
+  })
+  
+  
+  output$runtrending <- renderPlotly({
+    xt <- list(title = "Run")
+    yt <- list(title = input$ind_metric)
+    data2plot <- selectMetrics() %>% mutate(run.ID.bydate = paste(pdate, run.ID, sep = "_")) 
+    plot_ly(data2plot, y = ~metric, color = ~as.factor(run.ID.bydate), type = "box") %>%
+      layout(xaxis = xt, yaxis = yt) %>% layout(showlegend = FALSE)
+  })
+  
+  output$Mruntrending <- renderPlotly({
+    data2plot <- selectMetrics() %>% mutate(run.ID.bydate = paste(pdate, run.ID, sep = "_")) %>% group_by(run.ID.bydate) %>% summarise(mymedian=mean(metric, na.rm = T))
+    xt <- list(title = "Run")
+    yt <- list(title = input$ind_metric)
+    
+    plot_ly(data2plot, x = ~run.ID.bydate, y = ~mymedian, type = 'scatter', mode = 'markers') %>%
       layout(xaxis = xt, yaxis = yt) 
   })
   
@@ -620,7 +638,7 @@ function(input, output, session){
     } else {
       textcontent <- dt2plot[, input$lab_metric]
     }
-    p <- plot_ly(dt2plot, x= ~Metric1, y = ~Metric2, color = ~sample_type, colors = pal, mode = 'markers', text = ~textcontent) %>% layout(xaxis = xt, yaxis = yt)
+    p <- plot_ly(dt2plot, x= ~Metric1, y = ~Metric2, color = ~sample.type, colors = pal, mode = 'markers', text = ~textcontent) %>% layout(xaxis = xt, yaxis = yt)
     
     if(input$logx){
       p <- layout(p, xaxis = list(type = "log"))
@@ -717,9 +735,9 @@ function(input, output, session){
   
   output$p1 <- renderPlotly({
     if(input$sampleTG2 == "All"){
-      dat2plot <- mydata() %>% dplyr::select("sample_type", anames,input$px, input$py, input$pz, input$by_group2)
+      dat2plot <- mydata() %>% dplyr::select("sample.type", anames,input$px, input$py, input$pz, input$by_group2)
     } else {
-      dat2plot <- mydata() %>% filter(sample_type %in% input$sampleTG2) %>% dplyr::select("sample_type", anames,input$px, input$py, input$pz, input$by_group2)
+      dat2plot <- mydata() %>% filter(sample.type %in% input$sampleTG2) %>% dplyr::select("sample.type", anames,input$px, input$py, input$pz, input$by_group2)
     }
     
     dat2plot$x <- dat2plot[, input$px]
@@ -741,9 +759,9 @@ function(input, output, session){
   
   output$p2 <- renderPlotly({
     if(input$sampleTG2 == "All"){
-      dat2plot <- mydata() %>% dplyr::select("sample_type", anames,input$px, input$py, input$pz, input$by_group2)
+      dat2plot <- mydata() %>% dplyr::select("sample.type", anames,input$px, input$py, input$pz, input$by_group2)
     } else {
-      dat2plot <- mydata() %>% filter(sample_type %in% input$sampleTG2) %>% dplyr::select("sample_type", anames,input$px, input$py, input$pz, input$by_group2)
+      dat2plot <- mydata() %>% filter(sample.type %in% input$sampleTG2) %>% dplyr::select("sample.type", anames,input$px, input$py, input$pz, input$by_group2)
     }
     
     dat2plot$x <- dat2plot[, input$px]
@@ -766,9 +784,9 @@ function(input, output, session){
   
   seldata <- reactive({
     if(input$sampleTG2 == "All"){
-      dat2plot <- mydata() %>% dplyr::select("sample_type", anames,input$px, input$py, input$pz, input$by_group2)
+      dat2plot <- mydata() %>% dplyr::select("sample.type", anames,input$px, input$py, input$pz, input$by_group2)
     } else {
-      dat2plot <- mydata() %>% filter(sample_type %in% input$sampleTG2) %>% dplyr::select("sample_type", anames,input$px, input$py, input$pz, input$by_group2)
+      dat2plot <- mydata() %>% filter(sample.type %in% input$sampleTG2) %>% dplyr::select("sample.type", anames,input$px, input$py, input$pz, input$by_group2)
     }
     
     dat2plot$x <- dat2plot[, input$px]

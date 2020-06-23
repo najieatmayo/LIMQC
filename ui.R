@@ -4,12 +4,14 @@ header <- dashboardHeader(title = 'LIMQC' )
 
 ### SideBar:
 sidebar <- dashboardSidebar(
+  
   dateRangeInput('dateRange',
                  label = 'Date range input: yyyy-mm-dd', format = "yyyy-mm-dd",
                  start = min(pt$pdate, na.rm  = T), end = Sys.Date()), ## min(pt$pdate, na.rm  = T) "2016-01-01"
   radioButtons("rb", "Input Data:",
                choices = c("Demo Data", "Upload Your Own Data"),
                selected = "Demo Data"),
+  useShinyjs(),
   conditionalPanel(condition = 'input.rb == "Upload Your Own Data"',
                    fileInput("inFile", "", accept = c(".csv"))
   ),
@@ -69,14 +71,10 @@ body <- dashboardBody(
     # 
     tabItem(tabName = "data",
             ##tags$hr(),
-            fluidRow(useShinyjs(),
+            fluidRow(
                      valueBoxOutput("vbox1", width = 3),
                      valueBoxOutput("vbox2", width = 3),
-              # box( width = 4, height = 120,
-              #      
-              #      fluidRow(column(8, 
-              #           fileInput("inFile", label = "Upload Your Own Data:")),
-              #           column(2, actionButton("reset1", "Demo Data")))),
+
                 box(
                   title = "Sample Type",
                   width = 3, height = 110,
@@ -192,6 +190,8 @@ body <- dashboardBody(
                        ##Tabset per sample or perrun ----
                        tabsetPanel(type = "tabs",
                                    tabPanel("PerSample", plotlyOutput("trending")),
+                                   tabPanel("BoxPerDate", plotlyOutput("datetrending")),
+                                   tabPanel("MedianPerDate", plotlyOutput("Mdatetrending")),
                                    tabPanel("BoxPerRun", plotlyOutput("runtrending")),
                                    tabPanel("MedianPerRun", plotlyOutput("Mruntrending")),
                                    tabPanel("MovingWindow", plotlyOutput("MWtrending")))

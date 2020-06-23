@@ -3,9 +3,13 @@
 
 LIMQC provides interactive graphic user interface for selecting and examining quality data element of interests, with exportable table and figure results.
 
+<img src="./www/Fig1A.PNG" width="800">
+</p>
+</details>
+
 ## Host place
 
-rtools.mayo.edu/LIMQC/ <<- place holder
+rtools.mayo.edu/LIMQC/
 
 ## User guide
 

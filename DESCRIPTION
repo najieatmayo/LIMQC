@@ -1,0 +1,14 @@
+Title: LIMQC
+URL: my_mayo_app
+Version: 0.0.1
+Date: 2020-05-08
+Description: Longitudinal and Interactive Monitoring of Quality Characteristics (LIMQC) for Clinical Sequencing Tests
+        This interactive application allows you to explore a longitudinal data across a period of time. 
+        Data exploration, descriptive statistics, QC dashboard, interactive graphs including trending, correlation, comparison, and multi-panel examination, are ensembled in this app.
+
+Authors@R: c(
+    person("Jie", "Na", email = "na.jie@mayo.edu", role = c("aut", "cre")),
+    person("Chen Wang", "Contributor", role="ctb")
+  )
+Depends: R (>= 3.4.2)
+Type: App
