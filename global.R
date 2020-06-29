@@ -20,6 +20,8 @@ library(zoo)
 library(shinyjs)
 
 options(shiny.maxRequestSize=30*1024^2) 
+options(repos = c(CRAN = "https://cran.rstudio.com")) 
+
 load("data/test.RData")
 pt <- test
 rm(test)
