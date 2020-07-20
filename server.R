@@ -193,7 +193,7 @@ function(input, output, session){
       out1 <- out2 <- NULL
       if(length(contid)>0){ ## correlation with other cont
         cor1 <- cor(x, y1, use = "complete")
-        out1 <- data.frame(Against = colnames(cor1), Pearson_Coef = cor1[1,], ANOVA_pval = NA, Chisq_pval = NA)
+        out1 <- data.frame(Against = colnames(cor1), Pearson_Coef = cor1[1,], ANOVA_pval = NA, Chisq_pval = NA, cell_lt_5="")
         ## order by correlation
         out1 <- out1[order(out1$Pearson_Coef, decreasing = TRUE),]
       }
@@ -212,7 +212,7 @@ function(input, output, session){
             ps <- c(ps , NA)
           }
         }
-        out2 <- data.frame(Against = colnames(y2), Pearson_Coef = NA, ANOVA_pval = ps, Chisq_pval = NA)
+        out2 <- data.frame(Against = colnames(y2), Pearson_Coef = NA, ANOVA_pval = ps, Chisq_pval = NA, cell_lt_5="")
         out2 <- out2[order(out2$ANOVA_pval), ]
       }
       out <- rbind(out1, out2)
@@ -232,18 +232,19 @@ function(input, output, session){
             ps <- c(ps , NA)
           }
         }
-        out1 <- data.frame(Against = colnames(y1), Pearson_Coef = NA, ANOVA_pval = ps, Chisq_pval = NA)
+        out1 <- data.frame(Against = colnames(y1), Pearson_Coef = NA, ANOVA_pval = ps, Chisq_pval = NA, cell_lt_5="")
         out1 <- out1[order(out1$ANOVA_pval), ]
       }
       
       if(length(catid)>0){ ## Chisq vs other cat
-        ps <- NULL
+        ps <- NULL; cl5 <- NULL
         for(cati in 1:length(catid)){
           y2i <- y2[, cati] 
           tbl <- table(x, y2i)
-          ps <- c(ps, chisq.test(tbl)$p.value )
+          ps <- c(ps,  ifelse(any(tbl)<5, fisher.test(tbl, simulate.p.value=TRUE)$p.value, chisq.test(tbl)$p.value))
+          cl5 <- c(cl5, ifelse(any(tbl)<5, "*", ""))
         }
-        out2 <- data.frame(Against = colnames(y2), Pearson_Coef = NA, ANOVA_pval = NA, Chisq_pval = ps)
+        out2 <- data.frame(Against = colnames(y2), Pearson_Coef = NA, ANOVA_pval = NA, Chisq_pval = ps, cell_lt_5 = cl5)
         out2 <- out2[order(out2$Chisq_pval), ]
       }
       out <- rbind(out1, out2)
