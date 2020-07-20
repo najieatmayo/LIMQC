@@ -171,13 +171,23 @@ Note: if two or more filters are applied, they are AND operation. All other dash
 
 ### **Data Descr**
 
-Tab shows stats of variables that in the data. Start with continuous variables followed by categorical variables. Basic description is given for user to have the genearl idea of the data.
+Surmmary Tab shows stats of variables that in the data. Start with continuous variables followed by categorical variables. Basic description is given for user to have the genearl idea of the data.
 
 <details><summary>CLICK ME TO SHOW/HIDE DETAILS</summary>
 <p>
 
 <img src="./www/DescCont.PNG" width="300">
 <img src="./www/DescCat.PNG" width="300">
+
+</p>
+</details>
+
+Association Tab shows user selected variables and its association table with other variables (default all except sample.ID, and itself). Start with continuous variables followed by categorical variables. If user selected variable is continous, the Pearson Correlation Coefficient will be shown for the against coninuous variables in descending order. ANOVA pvalues will be shown for this variable against other categorical variables in ascending order. If the user selected variable is categorical, the ANOVA pvalue of this variable agains each continuous variable will be shown in ascending order, and the Chisq-test pvalues of this variable against other categorical variable will be shown in ascendig order. Chi-squared approximation may be replaced with Fisher exact test if table cell element is less than 5 which is indeicated by the column cell_lt_5.
+
+<details><summary>CLICK ME TO SHOW/HIDE DETAILS</summary>
+<p>
+
+<img src="./www/AssocTable.PNG">
 
 </p>
 </details>
