@@ -82,21 +82,30 @@ function(input, output, session){
   metricCols1 <-  reactive({ ## continouts
     return(names(mydata())[which(sapply(mydata(), function(x) is.numeric(x)))])
   })
-  metricCols2 <-  reactive({ ## catgorical
-    return(names(mydata())[which(sapply(mydata(), function(x) is.character(x)))])
+  metricCols2 <-  reactive({ ## catgorical excluding sample.ID
+    catnames <- setdiff(names(mydata())[which(sapply(mydata(), function(x) is.character(x)))], "sample.ID")
+    return(catnames)
   })
   
+  metricCols <- reactive({ ## all
+    return(c(metricCols1(), metricCols2()))
+  })
   
   observe({
     
     updatePickerInput(session= session, inputId="ind_sample_groups", choices = STypes2(), selected= STypes2())
+    updatePickerInput(session = session, inputId="col2show", choices = col2display2(), selected= col2display2())
+    
     updatePickerInput(session= session, inputId="ind_sample_groupsQC", choices = STypes2(), selected= STypes2()[1])
     updateSelectInput(session = session, inputId="CorrST", choices = STypes2(), selected= STypes2()[1])
     updateSelectInput(session = session, inputId="sampleTG", choices = STypes2(), selected= STypes2()[1])
     updateSelectInput(session = session, inputId="sampleTG2", choices = STypes2(), selected= STypes2()[1])
     
-    updatePickerInput(session = session, inputId="col2show", choices = col2display2(), selected= col2display2())
-    updateSelectInput(session = session, inputId="ind_metric", choices = metricCols1(), selected= metricCols1()[1])
+    ##updateSelectInput(session = session, inputId="varIntersted", choices = c("age", "bmi", "version"))
+    
+    updatePickerInput(session = session, inputId="varIntersted", choices = c(metricCols1(), metricCols2()), selected= c(metricCols1(), metricCols2())[1])
+    
+    updatePickerInput(session = session, inputId="ind_metric", choices = metricCols1(), selected= metricCols1()[1])
     updateSelectInput(session = session, inputId="metric_by", choices = metricCols1(), selected= metricCols1()[1])
     
     updateSelectInput(session = session, inputId="by_group2", choices = metricCols2(), selected= metricCols2()[1])
@@ -115,6 +124,10 @@ function(input, output, session){
     
   })
   
+  observe({
+    req(input$varIntersted)
+    updatePickerInput(session = session, inputId="AgainstVars", choices = c(metricCols1(), metricCols2()), selected= setdiff(c(metricCols1(), metricCols2()), input$varIntersted))
+  })
   mydataR<- reactive({
     
     stype <- input$ind_sample_groups
@@ -160,9 +173,90 @@ function(input, output, session){
     
     dt[, c(metricCols1(), factorCols)]
   })
+  
   output$arsTable <- renderTable({
     as.data.frame(summary(tableby(~., data = mydata2s(), control=tableby.control(numeric.stats=c("N", "Nmiss", "medianq1q3", "range"))), text = "html"))
   }, sanitize.text.function = function(x) x)
+  
+  assoctable <- reactive({
+    ##browser()
+    x <- mydata()[, input$varIntersted]
+    contid <- which(sapply(mydata()[input$AgainstVars], function(x) is.numeric(x)))
+    catid <- which(sapply(mydata()[input$AgainstVars], function(x) is.character(x)))
+    if(length(contid)>0){
+      y1 <- mydata()[, input$AgainstVars[contid]]
+    }
+    if(length(catid)>0){
+      y2 <- mydata()[, input$AgainstVars[catid]]
+    }
+    if(is.numeric(x)){## var of interest is a cont
+      out1 <- out2 <- NULL
+      if(length(contid)>0){ ## correlation with other cont
+        cor1 <- cor(x, y1, use = "complete")
+        out1 <- data.frame(Against = colnames(cor1), Pearson_Coef = cor1[1,], ANOVA_pval = NA, Chisq_pval = NA)
+        ## order by correlation
+        out1 <- out1[order(out1$Pearson_Coef, decreasing = TRUE),]
+      }
+      
+      if(length(catid)>0){ ## ANOVA vs cats
+        ps <- NULL
+        for(cati in 1:length(catid)){
+          
+          dt <- data.frame(x = x, y = y2[, cati])
+          dt <- data.frame(dt[complete.cases(dt),])
+          dt$y <- droplevels(dt$y)
+          if(length(levels(dt$y))>1){
+            myfit <- aov(x~as.factor(y), data = dt)
+            ps <- c(ps, summary(myfit)[[1]][["Pr(>F)"]][1])
+          } else {
+            ps <- c(ps , NA)
+          }
+        }
+        out2 <- data.frame(Against = colnames(y2), Pearson_Coef = NA, ANOVA_pval = ps, Chisq_pval = NA)
+        out2 <- out2[order(out2$ANOVA_pval), ]
+      }
+      out <- rbind(out1, out2)
+    } else if(is.character(x)){ ## var of interest is a cat
+      out1 <- out2 <- NULL
+      if(length(contid)>0){ ## ANOVA vs cont
+        ps <- NULL
+        for(conti in 1:length(contid)){
+          
+          dt <- data.frame(x = x, y = y1[, conti] )
+          dt <- data.frame(dt[complete.cases(dt),])
+          dt$x <- droplevels(dt$x)
+          if(length(levels(dt$x))>1){
+            myfit <- aov(y~as.factor(x), data = dt)
+            ps <- c(ps,  summary(myfit)[[1]][["Pr(>F)"]][1])
+          }else {
+            ps <- c(ps , NA)
+          }
+        }
+        out1 <- data.frame(Against = colnames(y1), Pearson_Coef = NA, ANOVA_pval = ps, Chisq_pval = NA)
+        out1 <- out1[order(out1$ANOVA_pval), ]
+      }
+      
+      if(length(catid)>0){ ## Chisq vs other cat
+        ps <- NULL
+        for(cati in 1:length(catid)){
+          y2i <- y2[, cati] 
+          tbl <- table(x, y2i)
+          ps <- c(ps, chisq.test(tbl)$p.value )
+        }
+        out2 <- data.frame(Against = colnames(y2), Pearson_Coef = NA, ANOVA_pval = NA, Chisq_pval = ps)
+        out2 <- out2[order(out2$Chisq_pval), ]
+      }
+      out <- rbind(out1, out2)
+    }
+    
+    out
+  })
+  
+  
+  output$assocTable <- renderTable({
+    assoctable()}, 
+    caption = 'Association table: selected variable against others, ordered by Pearson Correlation Coefficient for continuous variables, ANOVA pvalue for categorical varaibles, or Chisq-test (Fish Exact if cell number < 5) pvalues', striped = T
+  )
   
   ## QC
   qcdata <- reactive({

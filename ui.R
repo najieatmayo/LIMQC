@@ -143,7 +143,40 @@ body <- dashboardBody(
     ### TAB 2 = data description dashboard:
     #
     tabItem(tabName = "datades",
-            fluidPage(tableOutput("arsTable"))
+            
+            fluidPage( tabsetPanel(type = "tabs",
+                                   tabPanel("Summary", tableOutput("arsTable")),
+                                   tabPanel("Association", 
+                                            sidebarLayout(
+                                              
+                                              # Define the sidebar with one input
+                                              sidebarPanel(
+                                                ##selectInput('varIntersted', 'Variable of interest:', choices = NULL,  selected = NULL),
+                                                shinyWidgets::pickerInput(
+                                                  inputId = "varIntersted",
+                                                  label = "Variable of interest:",
+                                                  choices = NULL,
+                                                  options = list('actions-box' = TRUE),
+                                                  multiple = FALSE,
+                                                  selected = NULL
+                                                ),
+                                                shinyWidgets::pickerInput(
+                                                  inputId = "AgainstVars",
+                                                  label = "Against:",
+                                                  choices = NULL,
+                                                  options = list('actions-box' = TRUE),
+                                                  multiple = TRUE,
+                                                  selected = NULL
+                                                )
+                                                
+                                              ),
+                                              
+                                              # Create a spot for the plot
+                                              mainPanel(
+                                                tableOutput("assocTable"))
+                                              )
+                                            
+                                            )))
     ),
     ### TAB 3 = QC stat data dashboard:
     # 
@@ -289,7 +322,7 @@ body <- dashboardBody(
                   choices = anames,
                   options = list('actions-box' = TRUE),
                   multiple = TRUE,
-                  selected = NULL),
+                  selected = anames[1]),
                 checkboxInput('logx', "log scale on x", value = FALSE),
                 checkboxInput('logy', "log scale on y", value = FALSE),
                 checkboxInput('addtrend', "Add trend line", value = FALSE)
@@ -326,7 +359,7 @@ body <- dashboardBody(
 
             )
     ),
-    # TAB 3.? =     graphs dashboard: mult
+    # TAB 4 =     graphs dashboard: mult
     tabItem(tabName = "mult",
             
             sidebarLayout(
