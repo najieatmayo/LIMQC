@@ -179,7 +179,7 @@ function(input, output, session){
   }, sanitize.text.function = function(x) x)
   
   assoctable <- reactive({
-    ##browser()
+    
     x <- mydata()[, input$varIntersted]
     contid <- which(sapply(mydata()[input$AgainstVars], function(x) is.numeric(x)))
     catid <- which(sapply(mydata()[input$AgainstVars], function(x) is.character(x)))
@@ -192,14 +192,18 @@ function(input, output, session){
     if(is.numeric(x)){## var of interest is a cont
       out1 <- out2 <- NULL
       if(length(contid)>0){ ## correlation with other cont
-        cor1 <- cor(x, y1, use = "complete")
-        out1 <- data.frame(Against = colnames(cor1), Pearson_Coef = cor1[1,], ANOVA_pval = NA, Chisq_pval = NA, cell_lt_5="")
-        ## order by correlation
-        out1 <- out1[order(out1$Pearson_Coef, decreasing = TRUE),]
+        ps <- NULL; spr <- NULL
+        for(conti in 1:length(contid)){
+          yi <- y1[,conti]
+          cor1 <- cor.test(x, yi, method = "spearman", exact = FALSE)
+          ps <- c(ps, -log10(cor1$p.value))
+          spr <- c(spr, cor1$estimate) 
+        }
+        out1 <- data.frame(Against = colnames(y1), Spearman_rho = spr, ANOVA_F = NA, Chisq = NA, neglog10pvalue=ps)
       }
       
       if(length(catid)>0){ ## ANOVA vs cats
-        ps <- NULL
+        ps <- NULL; anovaF <- NULL
         for(cati in 1:length(catid)){
           
           dt <- data.frame(x = x, y = y2[, cati])
@@ -207,19 +211,20 @@ function(input, output, session){
           dt$y <- droplevels(dt$y)
           if(length(levels(dt$y))>1){
             myfit <- aov(x~as.factor(y), data = dt)
-            ps <- c(ps, summary(myfit)[[1]][["Pr(>F)"]][1])
+            ps <- c(ps, -log10(summary(myfit)[[1]][["Pr(>F)"]][1]))
+            anovaF <- c(anovaF, summary(myfit)[[1]][["F value"]][1])
           } else {
             ps <- c(ps , NA)
+            anovaF <- c(anovaF, NA)
           }
         }
-        out2 <- data.frame(Against = colnames(y2), Pearson_Coef = NA, ANOVA_pval = ps, Chisq_pval = NA, cell_lt_5="")
-        out2 <- out2[order(out2$ANOVA_pval), ]
+        out2 <- data.frame(Against = colnames(y2), Spearman_rho = NA, ANOVA_F = anovaF, Chisq = NA, neglog10pvalue=ps)
       }
       out <- rbind(out1, out2)
     } else if(is.character(x)){ ## var of interest is a cat
       out1 <- out2 <- NULL
       if(length(contid)>0){ ## ANOVA vs cont
-        ps <- NULL
+        ps <- NULL; anovaF <- NULL
         for(conti in 1:length(contid)){
           
           dt <- data.frame(x = x, y = y1[, conti] )
@@ -227,38 +232,44 @@ function(input, output, session){
           dt$x <- droplevels(dt$x)
           if(length(levels(dt$x))>1){
             myfit <- aov(y~as.factor(x), data = dt)
-            ps <- c(ps,  summary(myfit)[[1]][["Pr(>F)"]][1])
+            ps <- c(ps,  -log10(summary(myfit)[[1]][["Pr(>F)"]][1]))
+            anovaF <- c(anovaF, summary(myfit)[[1]][["F value"]][1])
           }else {
             ps <- c(ps , NA)
+            anovaF <- c(anovaF, NA)
           }
         }
-        out1 <- data.frame(Against = colnames(y1), Pearson_Coef = NA, ANOVA_pval = ps, Chisq_pval = NA, cell_lt_5="")
-        out1 <- out1[order(out1$ANOVA_pval), ]
+        out1 <- data.frame(Against = colnames(y1), Spearman_rho = NA, ANOVA_F = anovaF, Chisq = NA, neglog10pvalue=ps)
       }
       
       if(length(catid)>0){ ## Chisq vs other cat
-        ps <- NULL; cl5 <- NULL
+        ##browser()
+        ps <- NULL; X2 <- NULL
         for(cati in 1:length(catid)){
           y2i <- y2[, cati] 
           tbl <- table(x, y2i)
-          ps <- c(ps,  ifelse(any(tbl)<5, fisher.test(tbl, simulate.p.value=TRUE)$p.value, chisq.test(tbl)$p.value))
-          cl5 <- c(cl5, ifelse(any(tbl)<5, "*", ""))
+          ps <- c(ps, -log10( ifelse(any(tbl)<5, fisher.test(tbl, simulate.p.value=TRUE)$p.value, chisq.test(tbl)$p.value)))
+          est <- fisher.test(tbl, simulate.p.value=TRUE)$estimate
+          X2 <- c(X2, chisq.test(tbl)$stati)
         }
-        out2 <- data.frame(Against = colnames(y2), Pearson_Coef = NA, ANOVA_pval = NA, Chisq_pval = ps, cell_lt_5 = cl5)
-        out2 <- out2[order(out2$Chisq_pval), ]
+        ##Pearson's Chi-squared test with Yates' continuity correction
+        
+        out2 <- data.frame(Against = colnames(y2), Spearman_rho = NA, ANOVA_F = NA, Chisq = X2, neglog10pvalue=ps)
       }
       out <- rbind(out1, out2)
     }
     
-    out
+    out %>% arrange(desc(neglog10pvalue)) %>%
+      datatable(caption = 'Association table: selected variable against others,  Columns are Spearman Rho Correlation Coefficient for continuous variables, ANOVA F statistics for categorical varaibles, Chisq, -log10 of pvalues of the tests (correlation test, ANOVA, Chisq or Fisher Exact test if cell number less than 5 where they apply') %>%
+      formatRound(columns=c('Spearman_rho', 'ANOVA_F', 'Chisq', 'neglog10pvalue'), digits=2)
   })
   
   
-  output$assocTable <- renderTable({
-    assoctable()}, 
-    caption = 'Association table: selected variable against others, ordered by Pearson Correlation Coefficient for continuous variables, ANOVA pvalue for categorical varaibles, or Chisq-test (Fish Exact if cell number < 5) pvalues', striped = T
+  output$assocTable <- DT::renderDataTable(
+    assoctable()
   )
-  
+
+    
   ## QC
   qcdata <- reactive({
     dt <- mydataRQC()
@@ -742,7 +753,7 @@ function(input, output, session){
       p <- layout(p, yaxis = list(type = "log"))
     }
     if(input$addtrend){
-      ##browser()
+      
       if(!input$logx & !input$logy){
         x <- (dt2plot$Metric1)
         y <- (dt2plot$Metric2)

@@ -168,12 +168,11 @@ body <- dashboardBody(
                                                   multiple = TRUE,
                                                   selected = NULL
                                                 )
-                                                
                                               ),
                                               
                                               # Create a spot for the plot
                                               mainPanel(
-                                                tableOutput("assocTable"))
+                                                DT::dataTableOutput("assocTable"))
                                               )
                                             
                                             )))
