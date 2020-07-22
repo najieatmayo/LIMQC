@@ -260,7 +260,7 @@ function(input, output, session){
     }
     
     out %>% arrange(desc(neglog10pvalue)) %>%
-      datatable(caption = 'Association table: selected variable against others,  Columns are Spearman Rho Correlation Coefficient for continuous variables, ANOVA F statistics for categorical varaibles, Chisq, -log10 of pvalues of the tests (correlation test, ANOVA, Chisq or Fisher Exact test if cell number less than 5 where they apply') %>%
+      datatable(caption = 'Association table: selected variable against others,  Columns are Spearman Rho Correlation Coefficient for continuous variables, ANOVA F statistics for categorical variables, Chisq, -log10 of pvalues of the tests (correlation test, ANOVA, Chisq or Fisher Exact test if cell number less than 5 where they apply') %>%
       formatRound(columns=c('Spearman_rho', 'ANOVA_F', 'Chisq', 'neglog10pvalue'), digits=2)
   })
   
