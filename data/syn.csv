@@ -1,4 +1,4 @@
-"pdate","run.ID","sample.ID","sample.type","age","bmi","total.raw.cvg.Million","max.min.GCCovg.ratio","YXratio","case.fraction","T13.zscore","T18.zscore","T21.zscore","T13.call","T18.call","T21.call","Final.Conc..ng.ul.","Sample.QC","version"
+"pdate","run.ID","sample.ID","sample.type","age","bmi","total.raw.cvg.Million","max.min.GCCovg.ratio","YXratio","case.fraction","T13.zscore","T18.zscore","T21.zscore","T13.call","T18.call","T21.call","Final.Conc..ng.ul.","sample.QC","version"
 2016-12-26,"AVJVTCXBY","13-LSNLA-Y","patient",40,NA,26.58476,1.288734,0.0380979294510657,7.44678346331787,-0.2983422,-1.08862031,0.1694757,"Neg","Neg","Neg",7.44,"Pass","v1"
 2016-12-26,"AVJVTCXBY","13-JVFMA-X","patient",28,37.25,23.62629,1.101622,0.103089871117795,15.5333999260176,-0.3772902,0.73587584,0.1694757,"Neg","Neg","Neg",8.06,"Pass","v1"
 2016-12-26,"AVJVTCXBY","13-RTVMA-X","patient",21,19.18,23.62629,1.288734,0.0363232475937617,6.34290525402395,-0.7010512,-1.08862031,-0.32628,"Neg","Neg","Neg",6.61,"Pass","v1"
