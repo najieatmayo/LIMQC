@@ -153,12 +153,12 @@ function(input, output, session){
   
   ### get the number of qc pass samples
   nsamplePass <- reactive({
-    nrow(mydataRQC() %>% filter(Sample.QC %in% c("Pass", "")))
+    nrow(mydataRQC() %>% filter(sample.QC %in% c("Pass", "")))
   })
   
   ### get the number of qc warning samples
   nsampleWarn<- reactive({
-    nrow(mydataRQC() %>% filter(Sample.QC %nin% c("Pass", "")))
+    nrow(mydataRQC() %>% filter(sample.QC %nin% c("Pass", "")))
   })
   
   mydata2s <- reactive({
@@ -275,21 +275,21 @@ function(input, output, session){
     dt <- mydataRQC()
     
     lddate <- max(dt$pdate, na.rm = T)
-    ld <- dt %>% mutate() %>% filter(Sample.QC %nin% c("Pass", "")) %>% filter(pdate == lddate ) %>% group_by(Sample.QC) %>% tally()
-    colnames(ld) <- c("Sample.QC", "RDay")
+    ld <- dt %>% mutate() %>% filter(sample.QC %nin% c("Pass", "")) %>% filter(pdate == lddate ) %>% group_by(sample.QC) %>% tally()
+    colnames(ld) <- c("sample.QC", "RDay")
     
-    lw <- dt %>% mutate(weeks = round((max(dt$pdate, na.rm = T) - dt$pdate) /dweeks(1))) %>% filter(Sample.QC %nin% c("Pass", "")) %>% filter(weeks == min(weeks, na.rm = T) ) %>% group_by(Sample.QC) %>% tally()
-    colnames(lw) <- c("Sample.QC", "RWeek")
+    lw <- dt %>% mutate(weeks = round((max(dt$pdate, na.rm = T) - dt$pdate) /dweeks(1))) %>% filter(sample.QC %nin% c("Pass", "")) %>% filter(weeks == min(weeks, na.rm = T) ) %>% group_by(sample.QC) %>% tally()
+    colnames(lw) <- c("sample.QC", "RWeek")
     
     lastm <- month(lddate); lasty <- year(lddate)
-    lm <- dt %>% mutate(Month = month(pdate), YEAR = year(pdate)) %>% filter(Sample.QC %nin% c("Pass", "")) %>% filter(Month == lastm & YEAR == lasty) %>% group_by(Sample.QC) %>% tally()
-    colnames(lm) <- c("Sample.QC", "RMonth")
+    lm <- dt %>% mutate(Month = month(pdate), YEAR = year(pdate)) %>% filter(sample.QC %nin% c("Pass", "")) %>% filter(Month == lastm & YEAR == lasty) %>% group_by(sample.QC) %>% tally()
+    colnames(lm) <- c("sample.QC", "RMonth")
     
-    ly <- dt %>% mutate(Month = month(pdate), YEAR = year(pdate)) %>% filter(Sample.QC %nin% c("Pass", "")) %>% filter(YEAR == lasty) %>% group_by(Sample.QC) %>% tally()
-    colnames(ly) <- c("Sample.QC", "RYear")
+    ly <- dt %>% mutate(Month = month(pdate), YEAR = year(pdate)) %>% filter(sample.QC %nin% c("Pass", "")) %>% filter(YEAR == lasty) %>% group_by(sample.QC) %>% tally()
+    colnames(ly) <- c("sample.QC", "RYear")
     
-    all <- dt %>%  filter(Sample.QC %nin% c("Pass", "")) %>% group_by(Sample.QC) %>% tally()
-    colnames(all) <- c("Sample.QC", "Alive")
+    all <- dt %>%  filter(sample.QC %nin% c("Pass", "")) %>% group_by(sample.QC) %>% tally()
+    colnames(all) <- c("sample.QC", "Alive")
     
     ## merge all
     out <- full_join(ld, full_join(lw, full_join(lm, full_join(ly, all))))
@@ -347,7 +347,7 @@ function(input, output, session){
   
   output$Wrate <- renderPlotly({
     
-    V2plot <- mydataRQC() %>% mutate(Month = month(pdate), YEAR = year(pdate), QC = Sample.QC %in% c("Pass", "")) %>% filter(!is.na(pdate))
+    V2plot <- mydataRQC() %>% mutate(Month = month(pdate), YEAR = year(pdate), QC = sample.QC %in% c("Pass", "")) %>% filter(!is.na(pdate))
     
     dt0 <-  V2plot %>%
       group_by(Month, YEAR) %>% tally()
